@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
 
-if (process.argv.length < 5) {
-  console.log("One of these args is missing: <password> <name> <phone>");
-  process.exit(1);
-}
-
 const password = process.argv[2];
 const name = process.argv[3];
 const phoneNumber = process.argv[4];
@@ -19,7 +14,23 @@ const personSchema = new mongoose.Schema({
   phoneNumber: String,
 });
 
-const Person = mongoose.model("Person", personSchema);
+const Person = mongoose.model("Person", personSchema); // Define the Person model
+
+if (process.argv.length < 3) {
+  console.log("Password argument is missing");
+  process.exit(1);
+} else if (process.argv.length === 3) {
+  Person.find({}).then((persons) => {
+    console.log("phonebook:");
+    persons.forEach((person) => {
+      console.log(`${person.name} ${person.phoneNumber}`);
+    });
+    mongoose.connection.close();
+  });
+} else if (process.argv.length < 5) {
+  console.log("One of these args is missing: <name> <phoneNumber>");
+  process.exit(1);
+}
 
 if (name && phoneNumber) {
   const person = new Person({
@@ -30,7 +41,7 @@ if (name && phoneNumber) {
     console.log(`added ${name} number ${phoneNumber} to phonebook`);
     mongoose.connection.close();
   });
-} else {
+} else if (process.argv.length === 3) {
   Person.find({}).then((persons) => {
     console.log("phonebook:");
     persons.forEach((person) => {
