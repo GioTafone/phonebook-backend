@@ -14,7 +14,7 @@ const personSchema = new mongoose.Schema({
   phoneNumber: String,
 });
 
-const Person = mongoose.model("Person", personSchema); // Define the Person model
+const Person = mongoose.model("Person", personSchema);
 
 if (process.argv.length < 3) {
   console.log("Password argument is missing");
