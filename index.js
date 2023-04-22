@@ -44,10 +44,13 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  const count = persons.length;
-  const date = new Date();
-  response.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`);
+  Person.find({}).then((persons) => {
+    const count = persons.length;
+    const date = new Date();
+    response.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`);
+  });
 });
+
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
@@ -74,6 +77,14 @@ app.post("/api/persons", (request, response) => {
     response.json(savedPerson);
   });
 });
+
+app.use(unknownEndpoint);
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 
 // app.post("/api/persons", (request, response) => {
 //   const body = request.body;
@@ -102,9 +113,3 @@ app.post("/api/persons", (request, response) => {
 //   response.json(person);
 // });
 
-app.use(unknownEndpoint);
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
