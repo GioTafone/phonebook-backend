@@ -6,6 +6,20 @@ const morgan = require("morgan");
 
 const Person = require("./models/person");
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
 app.use(cors());
 app.use(express.static("build"));
 
@@ -20,10 +34,6 @@ app.use(
 );
 
 app.use(express.json());
-
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
-};
 
 let persons = [];
 
@@ -47,10 +57,11 @@ app.get("/info", (request, response) => {
   Person.find({}).then((persons) => {
     const count = persons.length;
     const date = new Date();
-    response.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`);
+    response.send(
+      `<p>Phonebook has info for ${count} people</p><p>${date}</p>`
+    );
   });
 });
-
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
@@ -79,37 +90,9 @@ app.post("/api/persons", (request, response) => {
 });
 
 app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
-// app.post("/api/persons", (request, response) => {
-//   const body = request.body;
-
-//   if (!body.name || !body.number) {
-//     return response.status(400).json({
-//       error: "name or number is missing",
-//     });
-//   }
-
-//   const nameExists = persons.find((person) => person.name === body.name);
-//   if (nameExists) {
-//     return response.status(400).json({
-//       error: "name must be unique",
-//     });
-//   }
-
-//   const person = {
-//     id: Math.floor(Math.random() * 100000),
-//     name: body.name,
-//     number: body.number,
-//   };
-
-//   persons = persons.concat(person);
-
-//   response.json(person);
-// });
-
