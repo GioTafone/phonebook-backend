@@ -18,7 +18,8 @@ const phoneNumberValidator = {
     const regex = /^(\d{2,3}-\d{7}|\d{3}-\d{6,7})$/;
     return regex.test(phoneNumber);
   },
-  message: "Phone number must be in the format of 'XX-XXXXXXX' or 'XXX-XXXXXX'.",
+  message:
+    "Phone number must be in the format of 'XX-XXXXXXX' or 'XXX-XXXXXX'.",
 };
 
 const personSchema = new mongoose.Schema({
