@@ -99,15 +99,15 @@ app.put("/api/persons/:id", (request, response, next) => {
   const { name, phoneNumber } = request.body;
 
   const person = {
-    name: body.name,
-    phoneNumber: body.phoneNumber,
+    name,
+    phoneNumber,
   };
 
-  Person.findByIdAndUpdate(
-    request.params.id,
-    { name, phoneNumber },
-    { new: true, runValidators: true, context: "query" }
-  )
+  Person.findByIdAndUpdate(request.params.id, person, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
