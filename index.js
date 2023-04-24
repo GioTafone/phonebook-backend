@@ -21,6 +21,7 @@ const unknownEndpoint = (request, response) => {
 };
 
 app.use(cors());
+app.use(express.json());
 app.use(express.static("build"));
 
 morgan.token("req-body", (req) => {
@@ -32,8 +33,6 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :req-body"
   )
 );
-
-app.use(express.json());
 
 let persons = [];
 
@@ -63,11 +62,12 @@ app.get("/info", (request, response) => {
   });
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
-
-  response.status(204).end();
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
